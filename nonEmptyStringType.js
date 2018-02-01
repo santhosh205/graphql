@@ -2,8 +2,8 @@ import { GraphQLScalarType } from 'graphql'
 import { GraphQLError } from 'graphql/error'
 import { Kind } from 'graphql/language'
 
-const EmailType = new GraphQLScalarType({
-  name: 'Email',
+const NonEmptyStringType = new GraphQLScalarType({
+  name: 'NonEmptyString',
   serialize: (value) => { return value },
   parseValue: (value) => { return value },
   parseLiteral: (ast) => {
@@ -11,13 +11,12 @@ const EmailType = new GraphQLScalarType({
       throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast])
     }
 
-    const re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
-    if (!re.test(ast.value)) {
-      throw new GraphQLError('Query error: Not a valid Email', [ast])
+    if (!ast.value.length) {
+      throw new GraphQLError('Query error: String must not be empty', [ast])
     }
 
     return ast.value
   }
 })
 
-export default EmailType
+export default NonEmptyStringType

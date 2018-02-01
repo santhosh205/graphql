@@ -2,7 +2,7 @@ import { GraphQLScalarType } from 'graphql'
 import { GraphQLError } from 'graphql/error'
 import { Kind } from 'graphql/language'
 
-const GraphQLPasswordType = new GraphQLScalarType({
+const PasswordType = new GraphQLScalarType({
   name: 'Password',
   serialize: (value) => { return value },
   parseValue: (value) => { return value },
@@ -40,4 +40,4 @@ const GraphQLPasswordType = new GraphQLScalarType({
   }
 })
 
-export default GraphQLPasswordType
+export default PasswordType

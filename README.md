@@ -2,22 +2,30 @@
 
 A Simple GraphQL Setup and Working Application
 
+> localhost:4000/graphql
+
 ## Schema
 
 ```
 
 customer = {
-  _id,
-  name,
-  email,
-  age,
-  password
+  _id: String,
+  name: String,
+  email: String,
+  age: Int,
+  password: String,
+  status: Boolean
 }
 
 order = {
-  _id,
-  item,
-  customerId
+  _id: String,
+  item: String,
+  customerId: String,
+  status: {
+    String,
+    Enum([ 'PLACED', 'CONFIRMED', 'INTRANSIT', 'DELIVERED', 'CANCELLED' ]),
+    default: 'PLACED'
+  }
 }
 
 ```
@@ -30,9 +38,24 @@ All inputs should be non-empty
 
 mutation {
 
-  addCustomer(name, email, age, password)
+  addCustomer(input: {
+    name: // Required
+    email: // Optional
+    age: // Optional
+    password: // Required
+  })
+
+  updateCustomer(_id, input: {
+    name // optional
+    email // optional
+    age // optional
+  })
+
+  deactivateAccount(_id)
 
   addOrder(item, customerId)
+
+  changeOrderStatus(_id, newStatus)
 
 }
 
@@ -56,7 +79,11 @@ mutation {
     }
   }
 
-  customers
+  getActiveAccounts
+
+  getDeactivatedAccounts
+
+  allCustomers
 
   order(_id){
     _id
@@ -64,7 +91,9 @@ mutation {
     customerId
   }
 
-  orders
+  getOrdersByStatus(status)
+
+  allOrders
 
 }
 
@@ -74,4 +103,4 @@ mutation {
 
 ## Actions to be completed
 
-> Empty string inputs should throw errors
+> MongoDB acknowledgement and error handling to display corresponding messages

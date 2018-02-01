@@ -2,7 +2,8 @@ import mongoose from 'mongoose'
 
 const CustomerSchema = mongoose.Schema({
   name: {
-    type: String
+    type: String,
+    required: true
   },
   email: {
     type: String
@@ -11,49 +12,69 @@ const CustomerSchema = mongoose.Schema({
     type: Number
   },
   password: {
-    type: String
+    type: String,
+    required: true,
+    select: false
+  },
+  status: {
+    type: Boolean,
+    default: true
   }
 })
 
 const Customer = mongoose.model('Customer', CustomerSchema)
 
+const CustomerObject = (data) => {
+  return {
+    _id: data._id.toString(),
+    name: data.name,
+    email: data.email,
+    age: data.age,
+    status: data.status
+  }
+}
+
 const customerResolvers = {
-  createCustomer: (name, email, age, password) => {
-    const newCustomer = new Customer({
-      name: name,
-      email: email,
-      age: age,
-      password: password
+  createCustomer: (customerData) => {
+    const newCustomer = new Customer(customerData)
+    return newCustomer.save().then((data) => {
+      return CustomerObject(data)
     })
-    return newCustomer.save().then((customer) => {
-      return {
-        _id: customer._id.toString(),
-        name: customer.name,
-        email: customer.email,
-        age: customer.age
-      }
+  },
+  getActiveAccounts: () => {
+    return Customer.find({ status: true }).then((customers) => {
+      return customers.map((data) => {
+        return CustomerObject(data)
+      })
+    })
+  },
+  getDeactivatedAccounts: () => {
+    return Customer.find({ status: false }).then((customers) => {
+      return customers.map((data) => {
+        return CustomerObject(data)
+      })
     })
   },
   getAllCustomers: () => {
-    return Customer.find({}, { password: 0 }).then((customers) => {
-      return customers.map((customer) => {
-        return {
-          _id: customer._id.toString(),
-          name: customer.name,
-          email: customer.email,
-          age: customer.age
-        }
+    return Customer.find({}).then((customers) => {
+      return customers.map((data) => {
+        return CustomerObject(data)
       })
     })
   },
   getCustomerById: (_id) => {
-    return Customer.findById(_id, { password: 0 }).then((customer) => {
-      return {
-        _id: customer._id.toString(),
-        name: customer.name,
-        email: customer.email,
-        age: customer.age
-      }
+    return Customer.findById(_id).then((data) => {
+      return CustomerObject(data)
+    })
+  },
+  updateCustomerById: (_id, updatePatch) => {
+    return Customer.findByIdAndUpdate(_id, { $set: updatePatch }, { new: true }).then((data) => {
+      return CustomerObject(data)
+    })
+  },
+  deactivateById: (_id) => {
+    return Customer.findByIdAndUpdate(_id, { $set: { status: false } }, { new: true }).then((data) => {
+      return CustomerObject(data)
     })
   }
 }

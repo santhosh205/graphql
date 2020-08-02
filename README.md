@@ -1,4 +1,4 @@
-# graphqlv1
+# graphql
 
 A simple GraphQL setup and working application
 

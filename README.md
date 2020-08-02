@@ -1,6 +1,6 @@
 # graphqlv1
 
-A Simple GraphQL Setup and Working Application
+A simple GraphQL setup and working application
 
 > localhost:4000/graphql
 
